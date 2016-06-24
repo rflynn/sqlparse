@@ -384,3 +384,45 @@ def test_stmt_tokens_parents():
     stmt = sqlparse.parse(s)[0]
     for token in stmt.tokens:
         assert token.has_ancestor(stmt)
+
+
+def test_cte_minimal_ok():
+    s = "with _ as (select 1) select 1;"
+    stmts = sqlparse.parse(s)[0]
+    assert len(stmts) == 1
+    stmt = stmts[0]
+    stmt.get_type() == 'SELECT'
+    str(list(stmt.get_sublists())[0]) == '_ as (select 1)'
+    str(stmt.tokens[0].ttype) == Token.Keyword.CTE
+    assert False
+
+def dump2str(stmt):
+    output = StringIO()
+    stmt._pprint_tree(f=output)
+    return output.getvalue()
+
+
+def test_cte_recursive_minimal_ok():
+    s = 'with recursive foo as (select 1) select 1'
+    dump2str(sqlparse.parse(s)[0])
+    """\
+ 0 CTE 'with'
+ 1 Whitespace ' '
+ 2 Keyword 'recurs...'
+ 3 Whitespace ' '
+ 4 Identifier 'foo as...'
+ |  0 Name 'foo'
+ |  1 Whitespace ' '
+ |  2 Keyword 'as'
+ |  3 Whitespace ' '
+ |  4 Parenthesis '(selec...'
+ |  |  0 Punctuation '('
+ |  |  1 DML 'select'
+ |  |  2 Whitespace ' '
+ |  |  3 Integer '1'
+ |  |  4 Punctuation ')'
+ 5 Whitespace ' '
+ 6 DML 'select'
+ 7 Whitespace ' '
+ 8 Integer '1'"""
+    assert False

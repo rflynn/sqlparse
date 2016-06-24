@@ -171,6 +171,13 @@ class TokenList(Token):
             if token.is_group() and (max_depth is None or depth < max_depth):
                 token._pprint_tree(max_depth, depth + 1, f)
 
+    def _filter_tree(self, f):
+        """Filter tokens"""
+        tokens = [(token._filter_tree(f)
+                    if token.is_group() else token)
+                        for token in self.tokens if f(token)]
+        return self.__class__(tokens)
+
     def get_token_at_offset(self, offset):
         """Returns the token that is on position offset."""
         idx = 0
