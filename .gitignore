@@ -1,6 +1,9 @@
 # PyCharm
 .idea/
 
+# vim
+.*.sw[op]
+
 *.pyc
 docs/build
 dist
@@ -18,3 +21,4 @@ extras/py3k/sqlparse.diff
 extras/py3k/tests.diff
 coverage.xml
 *.class
+build/
